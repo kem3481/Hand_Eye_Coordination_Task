@@ -1,0 +1,16 @@
+{
+  "source": "Unity",
+  "applications": [
+    {
+      "app_key": "application.generated.unity.megamove_adapt.exe",
+      "launch_type": "url",
+      "url": "steam://launch/",
+      "action_manifest_path": "C:\\Users\\performlab-admin\\Desktop\\MegaMove_Adaptation\\MegaMove_Adapt\\actions.json",
+      "strings": {
+        "en_us": {
+          "name": "MegaMove_Adapt [Testing]"
+        }
+      }
+    }
+  ]
+}
