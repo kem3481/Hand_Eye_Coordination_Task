@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class GazeHeadPos : MonoBehaviour
 {
-    public Vector3 headPosition;
 
     // Start is called before the first frame update
     void Start()

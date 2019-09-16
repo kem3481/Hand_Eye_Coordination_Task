@@ -5,7 +5,7 @@
       "app_key": "application.generated.unity.megamove_adapt.exe",
       "launch_type": "url",
       "url": "steam://launch/",
-      "action_manifest_path": "C:\\Users\\performlab-admin\\Desktop\\MegaMove_Adaptation\\MegaMove_Adapt\\actions.json",
+      "action_manifest_path": "C:\\Users\\kem3481\\Hand_Eye_Coordination_Task\\actions.json",
       "strings": {
         "en_us": {
           "name": "MegaMove_Adapt [Testing]"
