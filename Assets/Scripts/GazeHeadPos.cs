@@ -15,6 +15,10 @@ namespace ViveSR
                 private static VerboseData verboseData;
                 
                 public Vector3 binocularEIHorigin, binocularEIHdirection;
+                public Vector3 gazeDirection, fixationDirection, fixationpointPos, headPos;
+
+                public GameObject fixationPoint;
+                public GameObject head;
 
                 void Update()
                 {
@@ -30,11 +34,20 @@ namespace ViveSR
                             SRanipal_Eye.GetVerboseData(out verboseData);
                             SRanipal_Eye.GetGazeRay(GazeIndex.COMBINE, out binocularEIHorigin, out binocularEIHdirection);
 
+                            gazeDirection = binocularEIHorigin + binocularEIHdirection;
+                            AngularError(gazeDirection, fixationDirection);
                         }
                     }
 
                 }
 
+                void AngularError(Vector3 vector1, Vector3 vector2)
+                {
+                    fixationpointPos = fixationPoint.transform.position;
+                    headPos = head.transform.position;
+
+                    fixationDirection = fixationpointPos - headPos;
+                }
             }
         }
     }
