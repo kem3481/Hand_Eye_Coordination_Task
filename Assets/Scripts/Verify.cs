@@ -14,8 +14,13 @@ public class Verify : MonoBehaviour
     private HeadCheck head;
     private int WaitTime;
 
+    public GameObject manager;
+    private ViveSR.anipal.Eye.GazeHeadPos gazeHead;
+
     private void Start()
     {
+        gazeHead = manager.GetComponent<ViveSR.anipal.Eye.GazeHeadPos>();
+
         positionsCorrect = false;
         controller = hand.GetComponent<ControllerCheck>();
         head = headset.GetComponent<HeadCheck>();
@@ -23,21 +28,21 @@ public class Verify : MonoBehaviour
 
     private void Update()
     {
-        if (head.headPosition == true && controller.handPosition == true)
+        if (controller.handPosition == true && gazeHead.angularError > 2)
         {
             WaitTime++;
         }
 
-        if ((head.headPosition == false && controller.handPosition == true) ||
-            (head.headPosition == true && controller.handPosition == false) ||
-            (head.headPosition == false && controller.handPosition == false))
+        if ((gazeHead.angularError < 2 && controller.handPosition == true) ||
+            (gazeHead.angularError > 2 && controller.handPosition == false) ||
+            (gazeHead.angularError < 2 && controller.handPosition == false))
         {
             positionsCorrect = false;
         }
         
         if (positionsCorrect == true)
         {
-            Debug.Log("Positions are correct");
+            Debug.Log("Ready to Start");
         }
 
         if (hand.activeSelf == false)

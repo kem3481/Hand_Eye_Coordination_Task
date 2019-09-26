@@ -55,7 +55,7 @@ public class DataCollection : MonoBehaviour
     void Start()
     {
         allActive = false;
-       controlLevel = manager.GetComponent<ControlLevel_Trials>();
+        controlLevel = manager.GetComponent<ControlLevel_Trials>();
 
         // create a folder 
         string OutputDir = Path.Combine(FolderName, string.Concat(DateTime.Now.ToString("MM-dd-yyyy"), FileName));

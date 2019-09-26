@@ -64,7 +64,7 @@ public class ControlLevel_Trials : ControlLevel
     private Controls controls; 
     private ControllerCheck controller; 
     private HeadCheck head; 
-    private TriggerPull triggered; 
+    private TriggerPull triggered;
     
     // Data Writeout objects
     public string startTime;
