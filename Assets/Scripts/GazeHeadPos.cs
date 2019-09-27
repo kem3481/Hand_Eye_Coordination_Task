@@ -27,12 +27,13 @@ namespace ViveSR
                     fixationpointPos = fixationPoint.transform.position;
                     headPos = head.transform.position;
 
-                    fixationDirection = fixationpointPos - headPos;
+                    fixationDirection.x = fixationpointPos.x - headPos.x;
+                    fixationDirection.y = fixationpointPos.y - headPos.y;
+                    fixationDirection.z = fixationpointPos.z - headPos.z;
 
                     if (SRanipal_Eye_Framework.Status == SRanipal_Eye_Framework.FrameworkStatus.WORKING)
                     {
                         VerboseData data;
-                        Debug.Log("working");
                         if (SRanipal_Eye.GetVerboseData(out data) &&
                             data.left.GetValidity(SingleEyeDataValidity.SINGLE_EYE_DATA_GAZE_DIRECTION_VALIDITY) &&
                             data.right.GetValidity(SingleEyeDataValidity.SINGLE_EYE_DATA_GAZE_DIRECTION_VALIDITY)
@@ -41,18 +42,20 @@ namespace ViveSR
                             SRanipal_Eye.GetEyeData(ref eyeData);
                             SRanipal_Eye.GetVerboseData(out verboseData);
                             SRanipal_Eye.GetGazeRay(GazeIndex.COMBINE, out binocularEIHorigin, out binocularEIHdirection);
+                            
 
-                            Debug.Log("binocularERHorigin: " + binocularEIHorigin);
-                            gazeDirection = binocularEIHorigin + binocularEIHdirection;
+                            gazeDirection = headPos + binocularEIHdirection;
                             AngularError(gazeDirection, fixationDirection);
+                            
                         }
                     }
+                    Debug.DrawRay(headPos, gazeDirection, Color.red);
 
                 }
 
                 void AngularError(Vector3 vector1, Vector3 vector2)
                 {
-                    angularError = Mathf.Acos((Vector3.Dot(vector1, vector2))/(Vector3.Magnitude(vector1)*Vector3.Magnitude(vector2)));
+                    angularError = Mathf.Acos((Vector3.Dot(vector1, vector2))/(Vector3.Magnitude(vector1)*Vector3.Magnitude(vector2))) * Mathf.Rad2Deg;
                 }
             }
         }
