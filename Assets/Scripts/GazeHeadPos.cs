@@ -16,9 +16,11 @@ namespace ViveSR
                 
                 public Vector3 binocularEIHorigin, binocularEIHdirection;
                 public Vector3 gazeDirection, fixationDirection, fixationpointPos, headPos;
+                public Vector3 vector;
 
                 public GameObject fixationPoint;
                 public GameObject head;
+                public GameObject rig;
 
                 public float angularError;
 
@@ -42,15 +44,13 @@ namespace ViveSR
                             SRanipal_Eye.GetEyeData(ref eyeData);
                             SRanipal_Eye.GetVerboseData(out verboseData);
                             SRanipal_Eye.GetGazeRay(GazeIndex.COMBINE, out binocularEIHorigin, out binocularEIHdirection);
-                            
 
-                            gazeDirection = headPos + binocularEIHdirection;
+                            gazeDirection = head.transform.TransformPoint(binocularEIHorigin) + head.transform.TransformDirection(binocularEIHdirection);
                             AngularError(gazeDirection, fixationDirection);
-                            
                         }
                     }
-                    Debug.DrawRay(headPos, gazeDirection, Color.red);
-
+                    Debug.DrawRay(headPos, fixationDirection, Color.cyan);
+                    Debug.DrawRay(head.transform.TransformPoint(binocularEIHorigin), head.transform.TransformDirection(binocularEIHdirection), Color.red);
                 }
 
                 void AngularError(Vector3 vector1, Vector3 vector2)
