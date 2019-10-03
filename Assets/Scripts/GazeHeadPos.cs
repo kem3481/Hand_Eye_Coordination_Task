@@ -20,19 +20,23 @@ namespace ViveSR
 
                 public GameObject fixationPoint;
                 public GameObject head;
-                public GameObject rig;
+
+                public bool ready;
 
                 public float angularError;
 
+                private void Start()
+                {
+                    ready = false;
+                }
+
                 void Update()
                 {
-                    fixationpointPos = fixationPoint.transform.position;
-                    headPos = head.transform.position;
+                    fixationPoint.transform.SetParent(head.transform);
+                    fixationPoint.transform.localPosition = Vector3.forward * 0.5f;
+                    fixationpointPos = fixationPoint.transform.localPosition;
 
-                    fixationDirection.x = fixationpointPos.x - headPos.x;
-                    fixationDirection.y = fixationpointPos.y - headPos.y;
-                    fixationDirection.z = fixationpointPos.z - headPos.z;
-
+                    
                     if (SRanipal_Eye_Framework.Status == SRanipal_Eye_Framework.FrameworkStatus.WORKING)
                     {
                         VerboseData data;
@@ -44,18 +48,17 @@ namespace ViveSR
                             SRanipal_Eye.GetEyeData(ref eyeData);
                             SRanipal_Eye.GetVerboseData(out verboseData);
                             SRanipal_Eye.GetGazeRay(GazeIndex.COMBINE, out binocularEIHorigin, out binocularEIHdirection);
+                            
+                            gazeDirection = binocularEIHorigin + binocularEIHdirection;
 
-                            gazeDirection = head.transform.TransformPoint(binocularEIHorigin) + head.transform.TransformDirection(binocularEIHdirection);
-                            AngularError(gazeDirection, fixationDirection);
+                            AngularError(gazeDirection,  fixationpointPos);
                         }
                     }
-                    Debug.DrawRay(headPos, fixationDirection, Color.cyan);
-                    Debug.DrawRay(head.transform.TransformPoint(binocularEIHorigin), head.transform.TransformDirection(binocularEIHdirection), Color.red);
                 }
 
                 void AngularError(Vector3 vector1, Vector3 vector2)
                 {
-                    angularError = Mathf.Acos((Vector3.Dot(vector1, vector2))/(Vector3.Magnitude(vector1)*Vector3.Magnitude(vector2))) * Mathf.Rad2Deg;
+                    angularError = (Mathf.Acos((Vector3.Dot(vector1, vector2))/((Vector3.Magnitude(vector1))* (Vector3.Magnitude(vector2)))) * Mathf.Rad2Deg);
                 }
             }
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
 using UnityEngine.UI;
+using UnityEngine.Experimental.UIElements;
 
 // This script verifies the hand position.
 public class Verify : MonoBehaviour
@@ -12,9 +13,9 @@ public class Verify : MonoBehaviour
     public GameObject headset;
     private ControllerCheck controller;
     private HeadCheck head;
-    private int WaitTime;
-
-    public GameObject manager;
+    private float WaitTime;
+    
+    public GameObject manager, seen, unseen;
     private ViveSR.anipal.Eye.GazeHeadPos gazeHead;
 
     private void Start()
@@ -28,9 +29,10 @@ public class Verify : MonoBehaviour
 
     private void Update()
     {
-        if (controller.handPosition == true && gazeHead.angularError > 2)
+
+        while (controller.handPosition == true && gazeHead.angularError < 2)
         {
-            WaitTime++;
+            WaitTime = WaitTime + Time.deltaTime;
         }
 
         if ((gazeHead.angularError < 2 && controller.handPosition == true) ||
@@ -50,7 +52,7 @@ public class Verify : MonoBehaviour
             controller.handPosition = false;
         }
 
-        if (WaitTime > 100)
+        if (WaitTime > .5)
         {
             positionsCorrect = true;
             WaitTime = 0;
