@@ -1,9 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Valve.VR;
-using UnityEngine.UI;
-using UnityEngine.Experimental.UIElements;
 
 // This script verifies the hand position.
 public class Verify : MonoBehaviour
@@ -12,7 +9,6 @@ public class Verify : MonoBehaviour
     public GameObject hand;
     public GameObject headset;
     private ControllerCheck controller;
-    private HeadCheck head;
     private float WaitTime;
     
     public GameObject manager, seen, unseen;
@@ -24,20 +20,19 @@ public class Verify : MonoBehaviour
 
         positionsCorrect = false;
         controller = hand.GetComponent<ControllerCheck>();
-        head = headset.GetComponent<HeadCheck>();
     }
 
     private void Update()
     {
-
-        while (controller.handPosition == true && gazeHead.angularError < 2)
+        if (controller.handPosition == true && gazeHead.ready == true)
         {
-            WaitTime = WaitTime + Time.deltaTime;
+            Debug.Log("positions correct");
+            WaitTime+=Time.deltaTime;
         }
 
-        if ((gazeHead.angularError < 2 && controller.handPosition == true) ||
-            (gazeHead.angularError > 2 && controller.handPosition == false) ||
-            (gazeHead.angularError < 2 && controller.handPosition == false))
+        if ((gazeHead.ready == false && controller.handPosition == true) ||
+            (gazeHead.ready == true && controller.handPosition == false) ||
+            (gazeHead.ready == false && controller.handPosition == false))
         {
             positionsCorrect = false;
         }

@@ -63,7 +63,6 @@ public class ControlLevel_Trials : ControlLevel
     private Verify verifyPositions;
     private Controls controls; 
     private ControllerCheck controller; 
-    private HeadCheck head; 
     private TriggerPull triggered;
     
     // Data Writeout objects
@@ -132,7 +131,6 @@ public class ControlLevel_Trials : ControlLevel
         verifyPositions = manager.GetComponent<Verify>();
         controls = manager.GetComponent<Controls>();
         controller = controllerPosition.GetComponent<ControllerCheck>();
-        head = playerPosition.GetComponent<HeadCheck>();
         triggered = gamecontroller.GetComponent<TriggerPull>();
         rightController = GameObject.FindGameObjectWithTag("rightController");
         leftController = GameObject.FindGameObjectWithTag("leftController");

@@ -53,8 +53,23 @@ namespace ViveSR
 
                             AngularError(gazeDirection,  fixationpointPos);
                         }
+                        else
+                        {
+                            angularError = 180;
+                        }
+                    }
+                    
+
+                    if (angularError < 2)
+                    {
+                        ready = true;
+                    }
+                    if (angularError > 2)
+                    {
+                        ready = false;
                     }
                 }
+                
 
                 void AngularError(Vector3 vector1, Vector3 vector2)
                 {
