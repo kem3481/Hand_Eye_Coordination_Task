@@ -223,6 +223,7 @@ public class ControlLevel_Trials : ControlLevel
         {
                 
                 testobject = Instantiate(target);
+                testobject.transform.parent = playerPosition.transform;
                
                 targetonObject = GameObject.FindGameObjectWithTag("Object");
                 penalty = GameObject.FindGameObjectWithTag("PenaltyonTarget");
