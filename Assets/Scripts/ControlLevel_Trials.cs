@@ -225,6 +225,7 @@ public class ControlLevel_Trials : ControlLevel
         {
         headbar_stable.SetActive(false);
         headbar_variable.SetActive(false);
+        fixationpoint.SetActive(false);
         beginText.SetActive(false);
         controllerPosition.SetActive(false);
         trials++;
