@@ -81,7 +81,7 @@ public class PrintingPositions : MonoBehaviour
         targetPosition.x = TargetPosition.x - headPosition.transform.position.x;
         targetPosition.y = TargetPosition.y - headPosition.transform.position.y;
         targetPosition.z = TargetPosition.z - headPosition.transform.position.z;
-        targetAngular = Mathf.Acos((Vector3.Dot(targetPosition, gazeHead.fixationpointPos)) / (Vector3.Magnitude(targetPosition) * Vector3.Magnitude(gazeHead.fixationpointPos)));
+        targetAngular = Mathf.Acos((Vector3.Dot(targetPosition, gazeHead.fixationpointPos)) / (Vector3.Magnitude(targetPosition) * Vector3.Magnitude(gazeHead.fixationpointPos))) * Mathf.Rad2Deg;
 
         ControllerPosition.x = controls.trigger_x;
         ControllerPosition.y = controls.trigger_y;
@@ -89,7 +89,7 @@ public class PrintingPositions : MonoBehaviour
         controllerPosition.x = ControllerPosition.x - headPosition.transform.position.x;
         controllerPosition.y = ControllerPosition.y - headPosition.transform.position.y;
         controllerPosition.z = ControllerPosition.z - headPosition.transform.position.z;
-        controllerAngular = Mathf.Acos((Vector3.Dot(controllerPosition, gazeHead.fixationpointPos)) / (Vector3.Magnitude(controllerPosition) * Vector3.Magnitude(gazeHead.fixationpointPos)));
+        controllerAngular = Mathf.Acos((Vector3.Dot(controllerPosition, gazeHead.fixationpointPos)) / (Vector3.Magnitude(controllerPosition) * Vector3.Magnitude(gazeHead.fixationpointPos))) * Mathf.Rad2Deg;
 
         stringBuilder.Length = 0;
         stringBuilder.Append(
