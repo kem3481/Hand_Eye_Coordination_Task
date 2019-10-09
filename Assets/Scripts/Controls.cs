@@ -8,9 +8,9 @@ public class Controls : MonoBehaviour
     // Is creates a list of 40 of each type.
 
     // Eccentricities
-    private float small = 80f;
-    private float medium = 75f;
-    private float large =  70f;
+    private float small = 10f;
+    private float medium = 20f;
+    private float large =  30f;
     
     // Prefabs
     public GameObject smallOverlap;

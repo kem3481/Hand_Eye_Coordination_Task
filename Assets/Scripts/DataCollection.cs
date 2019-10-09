@@ -108,8 +108,8 @@ public class DataCollection : MonoBehaviour
         endTime = controlLevel.endTime;
         testObject = controlLevel.testobject;
         radius = controlLevel.radius;
-        polar = controlLevel.polarAngle;
-        elevation = controlLevel.elevationAngle;
+        polar = controlLevel.angle;
+        elevation = controlLevel.eccentricity;
 
         stringBuilder.Length = 0;
         stringBuilder.Append(

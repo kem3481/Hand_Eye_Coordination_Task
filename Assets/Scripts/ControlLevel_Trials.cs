@@ -71,7 +71,7 @@ public class ControlLevel_Trials : ControlLevel
     public int trials = 0; 
     private int score; 
     [System.NonSerialized]
-    public float polarAngle, elevationAngle, a;
+    public float angle, eccentricity, a;
     [System.NonSerialized]
     public float radius, trigger_x, trigger_y, trigger_z, target_x, target_y, target_z, penalty_x, penalty_y, penalty_z;
     
@@ -106,6 +106,7 @@ public class ControlLevel_Trials : ControlLevel
     private GameObject penalty;
     private GameObject targetonObject;
     public GameObject startingPositions;
+    private Vector3 targetDirection;
 
     public int Fix;
     public float percentCorrect;
@@ -197,9 +198,8 @@ public class ControlLevel_Trials : ControlLevel
         trials++;
 
         orientation = UnityEngine.Random.Range(0, 2);
-        polarAngle = (Mathf.Deg2Rad * UnityEngine.Random.Range(0, 359));
-        radius = .5f;
-        a = (radius * Mathf.Cos(elevationAngle));
+        angle = (Mathf.Deg2Rad * UnityEngine.Random.Range(0, 359));
+        radius = 1f;
         
         random2 = UnityEngine.Random.Range(0, controls.trialTypes.Length);
         random1 = controls.trialTypes[random2];
@@ -207,7 +207,7 @@ public class ControlLevel_Trials : ControlLevel
         {
             if (random1 == i)
             {
-                elevationAngle = controls.allAngles[i] * (Mathf.Deg2Rad);
+                eccentricity = controls.allAngles[i] * (Mathf.Deg2Rad);
                 target = controls.allTargets[i];
             }
         }
@@ -221,20 +221,23 @@ public class ControlLevel_Trials : ControlLevel
         
         if (testobject == null)
         {
-                
                 testobject = Instantiate(target);
                 testobject.transform.parent = playerPosition.transform;
                
                 targetonObject = GameObject.FindGameObjectWithTag("Object");
                 penalty = GameObject.FindGameObjectWithTag("PenaltyonTarget");
-                testobject.transform.position = playerPosition.transform.position + new Vector3((a * Mathf.Cos(polarAngle)), (radius * Mathf.Sin(elevationAngle)), (a * Mathf.Sin(polarAngle)));
+
+                targetDirection = new Vector3((radius * Mathf.Sin(eccentricity) * Mathf.Cos(angle)), (radius * Mathf.Sin(eccentricity) * Mathf.Sin(angle)), (radius * Mathf.Cos(eccentricity)));
+                //targetDirection = Vector3.Normalize(targetDirection) * 2f;
+
+                testobject.transform.localPosition = new Vector3(targetDirection.x, targetDirection.y, targetDirection.z);
                 if (orientation == 1)
                 {
-                    testobject.transform.eulerAngles = new Vector3(0f, -polarAngle * Mathf.Rad2Deg + 90, 0f);
+                    testobject.transform.eulerAngles = new Vector3(0f, -angle * Mathf.Rad2Deg + 90, 0f);
                 }
                 if (orientation == 0)
                 {
-                    testobject.transform.eulerAngles = new Vector3(0f,( -polarAngle * Mathf.Rad2Deg) + 270, 0f);
+                    testobject.transform.eulerAngles = new Vector3(0f,( -angle * Mathf.Rad2Deg) + 270, 0f);
                 }
 
                 target_x = targetonObject.transform.position.x;
