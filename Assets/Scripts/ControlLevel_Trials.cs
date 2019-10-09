@@ -92,24 +92,28 @@ public class ControlLevel_Trials : ControlLevel
     private GameObject rightController;
     private GameObject leftController;
     private GameObject headset;
+    private GameObject headbar_stable, headbar_variable;
+    private GameObject rig;
     
     // Empty Game objects
     private GameObject trigger;
     public GameObject manager; // control levels game object, holding all scirpts
-    
+
     // Unity Space objects
     public GameObject controllerPosition; // Hand position column
     public GameObject playerPosition; // headset poisiton column
     public GameObject gamecontroller; // Set to which controller is being used (icon)
     public GameObject test; // leftcontroller or right controller in heirarchy
-    public GameObject target;
+    public GameObject target, fixationpoint;
     private GameObject penalty;
     private GameObject targetonObject;
     public GameObject startingPositions;
     private Vector3 targetDirection;
+    private Transform headsetTrans;
 
     public int Fix;
     public float percentCorrect;
+    private GameObject toggle;
     [System.NonSerialized]
     public GameObject testobject;
     
@@ -119,6 +123,8 @@ public class ControlLevel_Trials : ControlLevel
     public override void DefineControlLevel()
     {
         // Defining States
+        State nothing = new State("nothing");
+        State headStabilization = new State("Stabilize"); // ensures that the head is in the same position at the beginning of all trials
         State begin = new State("Begin"); // Step 1 and 2 in Procedure
         State stimOn = new State("Stimulus"); // Step 3
         State collectResponse = new State("CollectResponse"); // Step 4
@@ -126,7 +132,7 @@ public class ControlLevel_Trials : ControlLevel
         State scoreState = new State("Score");
         State destination = new State("Destination"); // sends the script either back to begin or to feeback
         State feedback = new State("Feedback"); // Step 5
-        AddActiveStates(new List<State> { begin, stimOn, collectResponse, penaltyState, scoreState, destination, feedback });
+        AddActiveStates(new List<State> { nothing, headStabilization, begin, stimOn, collectResponse, penaltyState, scoreState, destination, feedback });
         
         // Accessing other scripts
         verifyPositions = manager.GetComponent<Verify>();
@@ -136,15 +142,38 @@ public class ControlLevel_Trials : ControlLevel
         rightController = GameObject.FindGameObjectWithTag("rightController");
         leftController = GameObject.FindGameObjectWithTag("leftController");
         headset = GameObject.FindGameObjectWithTag("Camera");
-
-
+        headbar_stable = GameObject.FindGameObjectWithTag("headPosition");
+        headbar_variable = GameObject.FindGameObjectWithTag("variable");
+        rig = GameObject.FindGameObjectWithTag("CameraRig");
         trigger = GameObject.FindGameObjectWithTag("Trigger");
-
+        toggle = GameObject.FindGameObjectWithTag("toggle");
         trialTypes = controls.trialTypes;
         scoreDisplay.text = "Score: " + score;
 
+        nothing.AddStateInitializationMethod(() =>
+        {
+            beginText.SetActive(false);
+            fixationpoint.SetActive(false);
+            endText.SetActive(false);
+            controllerPosition.SetActive(false);
+            playerPosition.SetActive(true);
+            scoreDisplay.text = string.Empty;
+            scoreText.SetActive(false);
+            trigger.SetActive(false);
+            data = false;
+        });
+        nothing.SpecifyStateTermination(()=> toggle.activeSelf == false, headStabilization);
+
+        headStabilization.AddStateInitializationMethod(() =>
+        {
+            headbar_stable.transform.SetParent(rig.transform);
+        });
+        headStabilization.SpecifyStateTermination(() => toggle.activeSelf == true, begin);
+
         begin.AddStateInitializationMethod(() =>
         {
+            headbar_stable.SetActive(true);
+            headbar_variable.SetActive(true);
             UnityEngine.Random.InitState((int)DateTime.Now.Second);
             percentCorrect = 0;
             beginText.SetActive(false);
@@ -154,6 +183,7 @@ public class ControlLevel_Trials : ControlLevel
             scoreDisplay.text = string.Empty;
             scoreText.SetActive(false);
             trigger.SetActive(false);
+            fixationpoint.SetActive(true);
             data = false;
             startTime = System.DateTime.UtcNow.ToString("HH:mm:ss");
             if (trials == 0)
@@ -193,13 +223,15 @@ public class ControlLevel_Trials : ControlLevel
 
         stimOn.AddStateInitializationMethod(() =>
         {
+        headbar_stable.SetActive(false);
+        headbar_variable.SetActive(false);
         beginText.SetActive(false);
         controllerPosition.SetActive(false);
         trials++;
 
         orientation = UnityEngine.Random.Range(0, 2);
         angle = (Mathf.Deg2Rad * UnityEngine.Random.Range(0, 359));
-        radius = 1f;
+        radius = 1.5f;
         
         random2 = UnityEngine.Random.Range(0, controls.trialTypes.Length);
         random1 = controls.trialTypes[random2];
@@ -228,8 +260,7 @@ public class ControlLevel_Trials : ControlLevel
                 penalty = GameObject.FindGameObjectWithTag("PenaltyonTarget");
 
                 targetDirection = new Vector3((radius * Mathf.Sin(eccentricity) * Mathf.Cos(angle)), (radius * Mathf.Sin(eccentricity) * Mathf.Sin(angle)), (radius * Mathf.Cos(eccentricity)));
-                //targetDirection = Vector3.Normalize(targetDirection) * 2f;
-
+                
                 testobject.transform.localPosition = new Vector3(targetDirection.x, targetDirection.y, targetDirection.z);
                 if (orientation == 1)
                 {
@@ -322,7 +353,7 @@ public class ControlLevel_Trials : ControlLevel
         {
             scoreText.SetActive(false);
 
-            if (trials < 360)
+            if (trials < 180)
             {
                 end = 1;
             }
@@ -339,7 +370,7 @@ public class ControlLevel_Trials : ControlLevel
         {
             
             endText.SetActive(true);
-            percentCorrect = percentCorrect / 360;
+            percentCorrect = percentCorrect / 180;
         });
 
     }

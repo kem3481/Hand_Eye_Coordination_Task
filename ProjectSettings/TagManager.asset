@@ -24,6 +24,10 @@ TagManager:
   - passedRadius
   - fixation_seen
   - fixation_unseen
+  - headPosition
+  - CameraRig
+  - variable
+  - toggle
   layers:
   - Default
   - TransparentFX

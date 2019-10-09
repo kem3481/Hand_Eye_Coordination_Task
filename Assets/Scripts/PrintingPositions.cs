@@ -5,12 +5,12 @@ using System.Text;
 
 public class PrintingPositions : MonoBehaviour
 {
-    public string FolderName = "C:\\Users\\kem3481\\Tracking Data";
+    public string FolderName = "C:\\Users\\kem3481\\Tracking_Data";
     public string FileName = "Test";
     private string OutputDir;
 
-    public ViveSR.anipal.Eye.GazeHeadPos gazeHead; // angular error
-    public ControlLevel_Trials controls;
+    private ViveSR.anipal.Eye.GazeHeadPos gazeHead; // angular error
+    private ControlLevel_Trials controls;
     public GameObject controller;
     public GameObject fixationPosition;
     public GameObject headPosition;
@@ -31,7 +31,7 @@ public class PrintingPositions : MonoBehaviour
 
     // Start is called before the first frame update
     void Start()
-    {// controller pos - head pos = controllerPos
+    {
      // angular error between fixation and controller
             gazeHead = manager.GetComponent<ViveSR.anipal.Eye.GazeHeadPos>();
             controls = manager.GetComponent<ControlLevel_Trials>();
@@ -81,7 +81,7 @@ public class PrintingPositions : MonoBehaviour
         targetPosition.x = TargetPosition.x - headPosition.transform.position.x;
         targetPosition.y = TargetPosition.y - headPosition.transform.position.y;
         targetPosition.z = TargetPosition.z - headPosition.transform.position.z;
-        targetAngular = Mathf.Acos((Vector3.Dot(targetPosition, gazeHead.fixationDirection)) / (Vector3.Magnitude(targetPosition) * Vector3.Magnitude(gazeHead.fixationDirection)));
+        targetAngular = Mathf.Acos((Vector3.Dot(targetPosition, gazeHead.fixationpointPos)) / (Vector3.Magnitude(targetPosition) * Vector3.Magnitude(gazeHead.fixationpointPos)));
 
         ControllerPosition.x = controls.trigger_x;
         ControllerPosition.y = controls.trigger_y;
@@ -89,7 +89,7 @@ public class PrintingPositions : MonoBehaviour
         controllerPosition.x = ControllerPosition.x - headPosition.transform.position.x;
         controllerPosition.y = ControllerPosition.y - headPosition.transform.position.y;
         controllerPosition.z = ControllerPosition.z - headPosition.transform.position.z;
-        controllerAngular = Mathf.Acos((Vector3.Dot(controllerPosition, gazeHead.fixationDirection)) / (Vector3.Magnitude(controllerPosition) * Vector3.Magnitude(gazeHead.fixationDirection)));
+        controllerAngular = Mathf.Acos((Vector3.Dot(controllerPosition, gazeHead.fixationpointPos)) / (Vector3.Magnitude(controllerPosition) * Vector3.Magnitude(gazeHead.fixationpointPos)));
 
         stringBuilder.Length = 0;
         stringBuilder.Append(
@@ -106,10 +106,7 @@ public class PrintingPositions : MonoBehaviour
 
     public void Update()
     {
-        if (controls.beginText == false)
-        {
-            WriteFile();
-        }
+      WriteFile();
 
     }
 

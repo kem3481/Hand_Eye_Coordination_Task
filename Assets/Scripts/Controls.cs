@@ -8,9 +8,9 @@ public class Controls : MonoBehaviour
     // Is creates a list of 40 of each type.
 
     // Eccentricities
-    private float small = 10f;
+    private float small = 15f;
     private float medium = 20f;
-    private float large =  30f;
+    private float large =  35f;
     
     // Prefabs
     public GameObject smallOverlap;
@@ -74,13 +74,13 @@ public class Controls : MonoBehaviour
         allTargets[7] = largeOverlap;
         allTargets[8] = largeOverlap;
 
-        trialTypes = new int[360];
+        trialTypes = new int[180];
 
         for (int j = 0; j < 9; j ++)
         {
-            for (int i = 0; i < 40; i++)
+            for (int i = 0; i < 20; i++)
             {
-                trialTypes[i + j*39] = j;
+                trialTypes[i + j*19] = j;
             }
         }
         
