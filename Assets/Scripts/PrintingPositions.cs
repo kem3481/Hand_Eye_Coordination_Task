@@ -16,8 +16,8 @@ public class PrintingPositions : MonoBehaviour
     public GameObject headPosition;
     public GameObject manager;
 
-    public float controllerAngular, targetAngular;
-    public Vector3 controllerPosition, targetPosition, ControllerPosition, TargetPosition;
+    public float controllerAngular, targetAngular, penaltyAngular;
+    public Vector3 ControllerPosition, TargetPosition, PenaltyPosition;
 
     //Gives user control over when to start and stop recording, trigger this with spacebar;
     public bool startWriting;
@@ -63,7 +63,7 @@ public class PrintingPositions : MonoBehaviour
             );
         //add column names
         stringBuilder.Append(
-            "Frame Number\t" + "Target Position Angular Difference\t" + "Hand Position Angular Difference\t" + "Gaze Position Angular Difference\t" + Environment.NewLine
+            "Frame Number\t" + "Target Position Angular Difference\t" + "Penalty Position Angular Difference\t" + "Hand Position Angular Difference\t" + "Gaze Position Angular Difference\t" + Environment.NewLine
                         );
 
 
@@ -78,23 +78,21 @@ public class PrintingPositions : MonoBehaviour
         TargetPosition.x = controls.target_x;
         TargetPosition.y = controls.target_y;
         TargetPosition.z = controls.target_z;
-        targetPosition.x = TargetPosition.x - headPosition.transform.position.x;
-        targetPosition.y = TargetPosition.y - headPosition.transform.position.y;
-        targetPosition.z = TargetPosition.z - headPosition.transform.position.z;
-        targetAngular = Mathf.Acos((Vector3.Dot(targetPosition, gazeHead.fixationpointPos)) / (Vector3.Magnitude(targetPosition) * Vector3.Magnitude(gazeHead.fixationpointPos))) * Mathf.Rad2Deg;
+        targetAngular = Mathf.Acos((Vector3.Dot(TargetPosition, gazeHead.fixationpointPos)) / (Vector3.Magnitude(TargetPosition) * Vector3.Magnitude(gazeHead.fixationpointPos))) * Mathf.Rad2Deg;
 
-        ControllerPosition.x = controls.trigger_x;
-        ControllerPosition.y = controls.trigger_y;
-        ControllerPosition.z = controls.trigger_z;
-        controllerPosition.x = ControllerPosition.x - headPosition.transform.position.x;
-        controllerPosition.y = ControllerPosition.y - headPosition.transform.position.y;
-        controllerPosition.z = ControllerPosition.z - headPosition.transform.position.z;
-        controllerAngular = Mathf.Acos((Vector3.Dot(controllerPosition, gazeHead.fixationpointPos)) / (Vector3.Magnitude(controllerPosition) * Vector3.Magnitude(gazeHead.fixationpointPos))) * Mathf.Rad2Deg;
+        PenaltyPosition.x = controls.penalty_x;
+        PenaltyPosition.y = controls.penalty_y;
+        PenaltyPosition.z = controls.penalty_z;
+        penaltyAngular = Mathf.Acos((Vector3.Dot(PenaltyPosition, gazeHead.fixationpointPos)) / (Vector3.Magnitude(PenaltyPosition) * Vector3.Magnitude(gazeHead.fixationpointPos))) * Mathf.Rad2Deg;
+
+        ControllerPosition = controls.gamecontroller.transform.position;
+        controllerAngular = Mathf.Acos((Vector3.Dot(ControllerPosition, gazeHead.fixationpointPos)) / (Vector3.Magnitude(ControllerPosition) * Vector3.Magnitude(gazeHead.fixationpointPos))) * Mathf.Rad2Deg;
 
         stringBuilder.Length = 0;
         stringBuilder.Append(
                     Time.frameCount.ToString() + "\t\t" // add frame number object
                     + targetAngular.ToString() + "\t"
+                    + penaltyAngular.ToString() + "\t"
                     + controllerAngular.ToString() + "\t"
                     + gazeHead.angularError.ToString() + "\t" +
                     Environment.NewLine
