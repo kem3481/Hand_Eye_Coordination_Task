@@ -106,7 +106,7 @@ public class ControlLevel_Trials : ControlLevel
     public GameObject test; // leftcontroller or right controller in heirarchy
     public GameObject target, fixationpoint;
     private GameObject penalty;
-    private GameObject targetonObject;
+    public GameObject targetonObject;
     public GameObject startingPositions;
     private Vector3 targetDirection;
     private Transform headsetTrans;

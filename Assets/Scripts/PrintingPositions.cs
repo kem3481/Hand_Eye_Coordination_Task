@@ -15,6 +15,7 @@ public class PrintingPositions : MonoBehaviour
     public GameObject fixationPosition;
     public GameObject headPosition;
     public GameObject manager;
+    private GameObject target;
 
     public float controllerAngular, targetAngular, penaltyAngular;
     public Vector3 ControllerPosition, TargetPosition, PenaltyPosition;
@@ -75,9 +76,18 @@ public class PrintingPositions : MonoBehaviour
 
     void WriteFile()
     {
-        TargetPosition.x = controls.target_x;
-        TargetPosition.y = controls.target_y;
-        TargetPosition.z = controls.target_z;
+        if (controls.targetonObject == null)
+        {
+            target.transform.position = new Vector3(0, 0, 0);
+        }
+        else
+        {
+            target.transform.position = controls.targetonObject.transform.position;
+        }
+        target.transform.SetParent(gazeHead.head.transform);
+        target.transform.localPosition = Vector3.forward;
+        TargetPosition = target.transform.localPosition;
+        
         targetAngular = Mathf.Acos((Vector3.Dot(TargetPosition, gazeHead.fixationpointPos)) / (Vector3.Magnitude(TargetPosition) * Vector3.Magnitude(gazeHead.fixationpointPos))) * Mathf.Rad2Deg;
 
         PenaltyPosition.x = controls.penalty_x;
@@ -100,6 +110,11 @@ public class PrintingPositions : MonoBehaviour
         writeString = stringBuilder.ToString();
         writebytes = Encoding.ASCII.GetBytes(writeString);
         trialStreams.Write(writebytes, 0, writebytes.Length);
+
+        Debug.DrawRay(Vector3.zero, TargetPosition, Color.red);
+        Debug.DrawRay(Vector3.zero, ControllerPosition, Color.green);
+        Debug.DrawRay(gazeHead.binocularEIHorigin, gazeHead.gazeDirection, Color.blue);
+        Debug.DrawRay(Vector3.zero, gazeHead.fixationpointPos, Color.magenta);
     }
 
     public void Update()
