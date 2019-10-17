@@ -16,10 +16,10 @@ public class PrintingPositions : MonoBehaviour
     public GameObject manager;
     public GameObject target, penalty;
     public GameObject controller;
-
-    public float controllerAngular, targetAngular, penaltyAngular;
+    public float angularError;
+    public float controllerAngular, targetAngular, penaltyAngular, gazeAngular;
     public Vector3 ControllerPosition, TargetPosition, PenaltyPosition, GazePosition, FixPosition, vector;
-
+    public float zero = 0;
     //Gives user control over when to start and stop recording, trigger this with spacebar;
     public bool startWriting;
 
@@ -78,38 +78,25 @@ public class PrintingPositions : MonoBehaviour
     }
 
     void WriteFile()
-    {/*
-        GazePosition = gazeHead.gazeDirection.normalized;
-        FixPosition = gazeHead.fixationpointPos.normalized;
+    {
+        ControllerPosition = (controller.transform.position - headPosition.transform.position);
+        TargetPosition = (controls.targetonObject.transform.position - headPosition.transform.position);
+        PenaltyPosition = (controls.penalty.transform.position - headPosition.transform.position);
 
-        target.transform.position = new Vector3(controls.target_x, controls.target_y, controls.target_z);
-        target.transform.SetParent(gazeHead.head.transform);
-        TargetPosition = target.transform.localPosition;
-        TargetPosition = TargetPosition.normalized;
-        targetAngular = Mathf.Acos((Vector3.Dot(TargetPosition, FixPosition)) / (Vector3.Magnitude(TargetPosition) * Vector3.Magnitude(FixPosition))) * Mathf.Rad2Deg;
-
-        penalty.transform.position = new Vector3(controls.penalty_x, controls.penalty_y, controls.penalty_z);
-        penalty.transform.SetParent(gazeHead.head.transform);
-        PenaltyPosition = penalty.transform.localPosition;
-        PenaltyPosition = PenaltyPosition.normalized;
-        penaltyAngular = Mathf.Acos((Vector3.Dot(PenaltyPosition, FixPosition)) / (Vector3.Magnitude(PenaltyPosition) * Vector3.Magnitude(FixPosition))) * Mathf.Rad2Deg;
-
-        controller.transform.SetParent(gazeHead.head.transform);
-        ControllerPosition = controller.transform.localPosition;
-        ControllerPosition = ControllerPosition.normalized;
-        controllerAngular = Mathf.Acos((Vector3.Dot(ControllerPosition, FixPosition)) / (Vector3.Magnitude(ControllerPosition) * Vector3.Magnitude(FixPosition))) * Mathf.Rad2Deg;
-        */
-        ControllerPosition = (controller.transform.position - gazeHead.head.transform.position);
+        controllerAngular = (Mathf.Acos((Vector3.Dot(ControllerPosition, gazeHead.fixationpointPos)) / ((Vector3.Magnitude(ControllerPosition)) * (Vector3.Magnitude(gazeHead.fixationpointPos)))) * Mathf.Rad2Deg);
+        targetAngular = (Mathf.Acos((Vector3.Dot(TargetPosition, gazeHead.fixationpointPos)) / ((Vector3.Magnitude(TargetPosition)) * (Vector3.Magnitude(gazeHead.fixationpointPos)))) * Mathf.Rad2Deg);
+        penaltyAngular = (Mathf.Acos((Vector3.Dot(PenaltyPosition, gazeHead.fixationpointPos)) / ((Vector3.Magnitude(PenaltyPosition)) * (Vector3.Magnitude(gazeHead.fixationpointPos)))) * Mathf.Rad2Deg);
+        gazeAngular = (Mathf.Acos((Vector3.Dot(gazeHead.gazeDirection, gazeHead.fixationpointPos)) / ((Vector3.Magnitude(gazeHead.gazeDirection)) * (Vector3.Magnitude(gazeHead.fixationpointPos)))) * Mathf.Rad2Deg);
 
         if (controls.targetonObject != null)
         {
             stringBuilder.Length = 0;
             stringBuilder.Append(
                         Time.frameCount.ToString() + "\t\t" 
-                        + controls.targetonObject.transform.position.ToString("F4") + "\t"
-                        + controls.penalty.transform.position.ToString("F4") + "\t"
-                        + ControllerPosition.ToString("F4") + "\t"
-                        + gazeHead.gazeDirection.ToString("F4") + "\t" +
+                        + targetAngular.ToString("F4") + "\t"
+                        + penaltyAngular.ToString("F4") + "\t"
+                        + controllerAngular.ToString("F4") + "\t"
+                        + gazeAngular.ToString("F4") + "\t" +
                         Environment.NewLine
                     );
         }
@@ -118,10 +105,10 @@ public class PrintingPositions : MonoBehaviour
             stringBuilder.Length = 0;
             stringBuilder.Append(
                         Time.frameCount.ToString() + "\t\t" 
-                        + vector.ToString("F4") + "\t"
-                        + vector.ToString("F4") + "\t"
-                        + ControllerPosition.ToString("F4") + "\t"
-                        + gazeHead.gazeDirection.ToString("F4") + "\t" +
+                        + zero.ToString("F4") + "\t"
+                        + zero.ToString("F4") + "\t"
+                        + controllerAngular.ToString("F4") + "\t"
+                        + gazeAngular.ToString("F4") + "\t" +
                         Environment.NewLine
                     );
         }
@@ -133,7 +120,6 @@ public class PrintingPositions : MonoBehaviour
     public void Update()
     {
       WriteFile();
-
     }
 
     public void OnApplicationQuit()
