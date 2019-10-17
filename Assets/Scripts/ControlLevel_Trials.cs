@@ -105,7 +105,7 @@ public class ControlLevel_Trials : ControlLevel
     public GameObject gamecontroller; // Set to which controller is being used (icon)
     public GameObject test; // leftcontroller or right controller in heirarchy
     public GameObject target, fixationpoint;
-    private GameObject penalty;
+    public GameObject penalty;
     public GameObject targetonObject;
     public GameObject startingPositions;
     private Vector3 targetDirection;
@@ -251,17 +251,17 @@ public class ControlLevel_Trials : ControlLevel
         }
         
         Array.Resize(ref controls.trialTypes, controls.trialTypes.Length - 1);
-        
-        if (testobject == null)
-        {
+
+            if (testobject == null)
+            {
                 testobject = Instantiate(target);
                 testobject.transform.parent = playerPosition.transform;
-               
+
                 targetonObject = GameObject.FindGameObjectWithTag("Object");
                 penalty = GameObject.FindGameObjectWithTag("PenaltyonTarget");
 
                 targetDirection = new Vector3((radius * Mathf.Sin(eccentricity) * Mathf.Cos(angle)), (radius * Mathf.Sin(eccentricity) * Mathf.Sin(angle)), (radius * Mathf.Cos(eccentricity)));
-                
+
                 testobject.transform.localPosition = new Vector3(targetDirection.x, targetDirection.y, targetDirection.z);
                 if (orientation == 1)
                 {
@@ -269,16 +269,16 @@ public class ControlLevel_Trials : ControlLevel
                 }
                 if (orientation == 0)
                 {
-                    testobject.transform.eulerAngles = new Vector3(0f,( -angle * Mathf.Rad2Deg) + 270, 0f);
+                    testobject.transform.eulerAngles = new Vector3(0f, (-angle * Mathf.Rad2Deg) + 270, 0f);
                 }
-
+            }
                 target_x = targetonObject.transform.position.x;
                 target_y = targetonObject.transform.position.y;
                 target_z = targetonObject.transform.position.z;
                 penalty_x = penalty.transform.position.x;
                 penalty_y = penalty.transform.position.y;
                 penalty_z = penalty.transform.position.z;
-            }
+            
         
         });
         stimOn.AddTimer(.1f, collectResponse);

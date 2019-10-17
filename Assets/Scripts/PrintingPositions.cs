@@ -11,14 +11,14 @@ public class PrintingPositions : MonoBehaviour
 
     private ViveSR.anipal.Eye.GazeHeadPos gazeHead; // angular error
     private ControlLevel_Trials controls;
-    public GameObject controller;
     public GameObject fixationPosition;
     public GameObject headPosition;
     public GameObject manager;
-    private GameObject target;
+    public GameObject target, penalty;
+    public GameObject controller;
 
     public float controllerAngular, targetAngular, penaltyAngular;
-    public Vector3 ControllerPosition, TargetPosition, PenaltyPosition;
+    public Vector3 ControllerPosition, TargetPosition, PenaltyPosition, GazePosition, FixPosition, vector;
 
     //Gives user control over when to start and stop recording, trigger this with spacebar;
     public bool startWriting;
@@ -34,19 +34,22 @@ public class PrintingPositions : MonoBehaviour
     void Start()
     {
      // angular error between fixation and controller
-            gazeHead = manager.GetComponent<ViveSR.anipal.Eye.GazeHeadPos>();
-            controls = manager.GetComponent<ControlLevel_Trials>();
+        gazeHead = manager.GetComponent<ViveSR.anipal.Eye.GazeHeadPos>();
+        controls = manager.GetComponent<ControlLevel_Trials>();
 
-            // create a folder 
-            string OutputDir = Path.Combine(FolderName, string.Concat(DateTime.Now.ToString("MM-dd-yyyy"), FileName));
-            Directory.CreateDirectory(OutputDir);
+        // create a folder 
+        string OutputDir = Path.Combine(FolderName, string.Concat(DateTime.Now.ToString("MM-dd-yyyy"), FileName));
+        Directory.CreateDirectory(OutputDir);
         
-            // create a file to record data
-            String trialOutput = Path.Combine(OutputDir, DateTime.Now.ToString("yyyy-MM-dd-HH-mm") + "_Results.txt");
-            trialStreams = new FileStream(trialOutput, FileMode.Create, FileAccess.Write);
+        // create a file to record data
+        String trialOutput = Path.Combine(OutputDir, DateTime.Now.ToString("yyyy-MM-dd-HH-mm") + "_Results.txt");
+        trialStreams = new FileStream(trialOutput, FileMode.Create, FileAccess.Write);
         
-            //Call the function below to write the column names
-            WriteHeader();
+        //Call the function below to write the column names
+        WriteHeader();
+        controller = controls.gamecontroller;
+
+        vector = new Vector3(0, 0, 0);
     }
 
     void WriteHeader()
@@ -75,46 +78,56 @@ public class PrintingPositions : MonoBehaviour
     }
 
     void WriteFile()
-    {
+    {/*
+        GazePosition = gazeHead.gazeDirection.normalized;
+        FixPosition = gazeHead.fixationpointPos.normalized;
+
+        target.transform.position = new Vector3(controls.target_x, controls.target_y, controls.target_z);
+        target.transform.SetParent(gazeHead.head.transform);
+        TargetPosition = target.transform.localPosition;
+        TargetPosition = TargetPosition.normalized;
+        targetAngular = Mathf.Acos((Vector3.Dot(TargetPosition, FixPosition)) / (Vector3.Magnitude(TargetPosition) * Vector3.Magnitude(FixPosition))) * Mathf.Rad2Deg;
+
+        penalty.transform.position = new Vector3(controls.penalty_x, controls.penalty_y, controls.penalty_z);
+        penalty.transform.SetParent(gazeHead.head.transform);
+        PenaltyPosition = penalty.transform.localPosition;
+        PenaltyPosition = PenaltyPosition.normalized;
+        penaltyAngular = Mathf.Acos((Vector3.Dot(PenaltyPosition, FixPosition)) / (Vector3.Magnitude(PenaltyPosition) * Vector3.Magnitude(FixPosition))) * Mathf.Rad2Deg;
+
+        controller.transform.SetParent(gazeHead.head.transform);
+        ControllerPosition = controller.transform.localPosition;
+        ControllerPosition = ControllerPosition.normalized;
+        controllerAngular = Mathf.Acos((Vector3.Dot(ControllerPosition, FixPosition)) / (Vector3.Magnitude(ControllerPosition) * Vector3.Magnitude(FixPosition))) * Mathf.Rad2Deg;
+        */
+        ControllerPosition = (controller.transform.position - gazeHead.head.transform.position);
+
+        if (controls.targetonObject != null)
+        {
+            stringBuilder.Length = 0;
+            stringBuilder.Append(
+                        Time.frameCount.ToString() + "\t\t" 
+                        + controls.targetonObject.transform.position.ToString("F4") + "\t"
+                        + controls.penalty.transform.position.ToString("F4") + "\t"
+                        + ControllerPosition.ToString("F4") + "\t"
+                        + gazeHead.gazeDirection.ToString("F4") + "\t" +
+                        Environment.NewLine
+                    );
+        }
         if (controls.targetonObject == null)
         {
-            target.transform.position = new Vector3(0, 0, 0);
+            stringBuilder.Length = 0;
+            stringBuilder.Append(
+                        Time.frameCount.ToString() + "\t\t" 
+                        + vector.ToString("F4") + "\t"
+                        + vector.ToString("F4") + "\t"
+                        + ControllerPosition.ToString("F4") + "\t"
+                        + gazeHead.gazeDirection.ToString("F4") + "\t" +
+                        Environment.NewLine
+                    );
         }
-        else
-        {
-            target.transform.position = controls.targetonObject.transform.position;
-        }
-        target.transform.SetParent(gazeHead.head.transform);
-        target.transform.localPosition = Vector3.forward;
-        TargetPosition = target.transform.localPosition;
-        
-        targetAngular = Mathf.Acos((Vector3.Dot(TargetPosition, gazeHead.fixationpointPos)) / (Vector3.Magnitude(TargetPosition) * Vector3.Magnitude(gazeHead.fixationpointPos))) * Mathf.Rad2Deg;
-
-        PenaltyPosition.x = controls.penalty_x;
-        PenaltyPosition.y = controls.penalty_y;
-        PenaltyPosition.z = controls.penalty_z;
-        penaltyAngular = Mathf.Acos((Vector3.Dot(PenaltyPosition, gazeHead.fixationpointPos)) / (Vector3.Magnitude(PenaltyPosition) * Vector3.Magnitude(gazeHead.fixationpointPos))) * Mathf.Rad2Deg;
-
-        ControllerPosition = controls.gamecontroller.transform.position;
-        controllerAngular = Mathf.Acos((Vector3.Dot(ControllerPosition, gazeHead.fixationpointPos)) / (Vector3.Magnitude(ControllerPosition) * Vector3.Magnitude(gazeHead.fixationpointPos))) * Mathf.Rad2Deg;
-
-        stringBuilder.Length = 0;
-        stringBuilder.Append(
-                    Time.frameCount.ToString() + "\t\t" // add frame number object
-                    + targetAngular.ToString() + "\t"
-                    + penaltyAngular.ToString() + "\t"
-                    + controllerAngular.ToString() + "\t"
-                    + gazeHead.angularError.ToString() + "\t" +
-                    Environment.NewLine
-                );
         writeString = stringBuilder.ToString();
         writebytes = Encoding.ASCII.GetBytes(writeString);
         trialStreams.Write(writebytes, 0, writebytes.Length);
-
-        Debug.DrawRay(Vector3.zero, TargetPosition, Color.red);
-        Debug.DrawRay(Vector3.zero, ControllerPosition, Color.green);
-        Debug.DrawRay(gazeHead.binocularEIHorigin, gazeHead.gazeDirection, Color.blue);
-        Debug.DrawRay(Vector3.zero, gazeHead.fixationpointPos, Color.magenta);
     }
 
     public void Update()

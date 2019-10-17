@@ -15,7 +15,7 @@ namespace ViveSR
                 private static VerboseData verboseData;
                 
                 public Vector3 binocularEIHorigin, binocularEIHdirection;
-                public Vector3 gazeDirection, fixationDirection, fixationpointPos, headPos;
+                public Vector3 gazeDirection, fixationDirection, fixationpointPos;
                 public Vector3 vector;
 
                 public GameObject fixationPoint;
