@@ -330,6 +330,10 @@ public class ControlLevel_Trials : ControlLevel
                 trialScore = 100;
                 triggered.targetTouched = false;
                 percentCorrect++;
+                score = score + trialScore;
+                scoreDisplay.color = Color.green;
+                scoreDisplay.text = "+ 100 \n " + "Score: " + score;
+                scoreText.SetActive(true);
             }
             else
             {
@@ -340,12 +344,13 @@ public class ControlLevel_Trials : ControlLevel
             {
                 trialScore = -100;
                 triggered.penaltyTouched = false;
+                score = score + trialScore;
+                scoreDisplay.color = Color.red;
+                scoreDisplay.text = "- 100 \n " + "Score: " + score;
+                scoreText.SetActive(true);
             }
 
             trigger.SetActive(false);
-            score = score + trialScore;
-            scoreDisplay.text = "Score: " + score;
-            scoreText.SetActive(true);
 
         });
         scoreState.AddTimer(1.5f, destination);

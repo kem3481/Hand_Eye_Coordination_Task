@@ -59,7 +59,7 @@ public class Verify : MonoBehaviour
             head_Transform = false;
         }
 
-        if (controller.handPosition == true && gazeHead.ready == true && head_Transform == true)
+        if (controller.handPosition == true && /*gazeHead.ready == true &&*/ head_Transform == true)
         {
             Debug.Log("positions correct");
             WaitTime+=Time.deltaTime;

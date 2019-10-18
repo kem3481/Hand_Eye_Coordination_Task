@@ -82,11 +82,11 @@ public class PrintingPositions : MonoBehaviour
         ControllerPosition = (controller.transform.position - headPosition.transform.position);
         TargetPosition = (controls.targetonObject.transform.position - headPosition.transform.position);
         PenaltyPosition = (controls.penalty.transform.position - headPosition.transform.position);
-
+        GazePosition = (gazeHead.gazeDirection + headPosition.transform.position);
         controllerAngular = (Mathf.Acos((Vector3.Dot(ControllerPosition, gazeHead.fixationpointPos)) / ((Vector3.Magnitude(ControllerPosition)) * (Vector3.Magnitude(gazeHead.fixationpointPos)))) * Mathf.Rad2Deg);
         targetAngular = (Mathf.Acos((Vector3.Dot(TargetPosition, gazeHead.fixationpointPos)) / ((Vector3.Magnitude(TargetPosition)) * (Vector3.Magnitude(gazeHead.fixationpointPos)))) * Mathf.Rad2Deg);
         penaltyAngular = (Mathf.Acos((Vector3.Dot(PenaltyPosition, gazeHead.fixationpointPos)) / ((Vector3.Magnitude(PenaltyPosition)) * (Vector3.Magnitude(gazeHead.fixationpointPos)))) * Mathf.Rad2Deg);
-        gazeAngular = (Mathf.Acos((Vector3.Dot(gazeHead.gazeDirection, gazeHead.fixationpointPos)) / ((Vector3.Magnitude(gazeHead.gazeDirection)) * (Vector3.Magnitude(gazeHead.fixationpointPos)))) * Mathf.Rad2Deg);
+        gazeAngular = (Mathf.Acos((Vector3.Dot(GazePosition, gazeHead.fixationpointPos)) / ((Vector3.Magnitude(GazePosition)) * (Vector3.Magnitude(gazeHead.fixationpointPos)))) * Mathf.Rad2Deg);
 
         if (controls.targetonObject != null)
         {
