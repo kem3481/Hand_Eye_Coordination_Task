@@ -111,6 +111,7 @@ public class ControlLevel_Trials : ControlLevel
     private Vector3 targetDirection;
     private Transform headsetTrans;
 
+    public int hit;
     public int Fix;
     public float percentCorrect;
     private GameObject toggle;
@@ -152,6 +153,7 @@ public class ControlLevel_Trials : ControlLevel
 
         nothing.AddStateInitializationMethod(() =>
         {
+            hit = -1;
             beginText.SetActive(false);
             fixationpoint.SetActive(false);
             endText.SetActive(false);
@@ -172,6 +174,7 @@ public class ControlLevel_Trials : ControlLevel
 
         begin.AddStateInitializationMethod(() =>
         {
+            hit = -1;
             headbar_stable.SetActive(true);
             headbar_variable.SetActive(true);
             UnityEngine.Random.InitState((int)DateTime.Now.Second);
@@ -334,6 +337,7 @@ public class ControlLevel_Trials : ControlLevel
                 scoreDisplay.color = Color.green;
                 scoreDisplay.text = "+ 100 \n " + "Score: " + score;
                 scoreText.SetActive(true);
+                hit = 1;
             }
             else
             {
@@ -348,6 +352,7 @@ public class ControlLevel_Trials : ControlLevel
                 scoreDisplay.color = Color.red;
                 scoreDisplay.text = "- 100 \n " + "Score: " + score;
                 scoreText.SetActive(true);
+                hit = 0;
             }
 
             trigger.SetActive(false);

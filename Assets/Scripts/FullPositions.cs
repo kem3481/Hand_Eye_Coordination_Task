@@ -3,9 +3,9 @@ using System;
 using System.IO;
 using System.Text;
 
-public class PrintingPositions : MonoBehaviour
+public class FullPositions : MonoBehaviour
 {
-    public string FolderName = "C:\\Users\\kem3481\\Tracking_Data_Angular";
+    public string FolderName = "C:\\Users\\kem3481\\Tracking_Data";
     public string FileName = "Test";
     private string OutputDir;
 
@@ -33,18 +33,18 @@ public class PrintingPositions : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-     // angular error between fixation and controller
+        // angular error between fixation and controller
         gazeHead = manager.GetComponent<ViveSR.anipal.Eye.GazeHeadPos>();
         controls = manager.GetComponent<ControlLevel_Trials>();
 
         // create a folder 
         string OutputDir = Path.Combine(FolderName, string.Concat(DateTime.Now.ToString("MM-dd-yyyy"), FileName));
         Directory.CreateDirectory(OutputDir);
-        
+
         // create a file to record data
         String trialOutput = Path.Combine(OutputDir, DateTime.Now.ToString("yyyy-MM-dd-HH-mm") + "_Results.txt");
         trialStreams = new FileStream(trialOutput, FileMode.Create, FileAccess.Write);
-        
+
         //Call the function below to write the column names
         WriteHeader();
         controller = controls.gamecontroller;
@@ -67,7 +67,7 @@ public class PrintingPositions : MonoBehaviour
             );
         //add column names
         stringBuilder.Append(
-            "Frame Number\t" + "Target Position Angular Difference\t" + "Penalty Position Angular Difference\t" + "Hand Position Angular Difference\t" + "Gaze Position Angular Difference\t" + Environment.NewLine
+            "Frame Number\t" + "Target Position_x\t" + "Target Position_y\t" + "Target Position_z\t" + "Penalty Position_x\t" + "Penalty Position_y\t" + "Penalty Position_z\t" + "Hand Position_x\t" + "Hand Position_y\t" + "Hand Position_z\t" + "Gaze Position_x\t" + "Gaze Position_y\t" + "Gaze Position_z\t" + "Hit(1) or Miss(0)\t"+ Environment.NewLine
                         );
 
 
@@ -83,20 +83,25 @@ public class PrintingPositions : MonoBehaviour
         TargetPosition = (controls.targetonObject.transform.position - headPosition.transform.position);
         PenaltyPosition = (controls.penalty.transform.position - headPosition.transform.position);
         GazePosition = (gazeHead.gazeDirection + headPosition.transform.position);
-        controllerAngular = (Mathf.Acos((Vector3.Dot(ControllerPosition, gazeHead.fixationpointPos)) / ((Vector3.Magnitude(ControllerPosition)) * (Vector3.Magnitude(gazeHead.fixationpointPos)))) * Mathf.Rad2Deg);
-        targetAngular = (Mathf.Acos((Vector3.Dot(TargetPosition, gazeHead.fixationpointPos)) / ((Vector3.Magnitude(TargetPosition)) * (Vector3.Magnitude(gazeHead.fixationpointPos)))) * Mathf.Rad2Deg);
-        penaltyAngular = (Mathf.Acos((Vector3.Dot(PenaltyPosition, gazeHead.fixationpointPos)) / ((Vector3.Magnitude(PenaltyPosition)) * (Vector3.Magnitude(gazeHead.fixationpointPos)))) * Mathf.Rad2Deg);
-        gazeAngular = (Mathf.Acos((Vector3.Dot(GazePosition, gazeHead.fixationpointPos)) / ((Vector3.Magnitude(GazePosition)) * (Vector3.Magnitude(gazeHead.fixationpointPos)))) * Mathf.Rad2Deg);
 
         if (controls.targetonObject != null)
         {
             stringBuilder.Length = 0;
             stringBuilder.Append(
-                        Time.frameCount.ToString() + "\t\t" 
-                        + targetAngular.ToString("F4") + "\t"
-                        + penaltyAngular.ToString("F4") + "\t"
-                        + controllerAngular.ToString("F4") + "\t"
-                        + gazeAngular.ToString("F4") + "\t" +
+                        Time.frameCount.ToString() + "\t\t"
+                        + TargetPosition.x.ToString("F4") + "\t"
+                        + TargetPosition.y.ToString("F4") + "\t"
+                        + TargetPosition.z.ToString("F4") + "\t"
+                        + PenaltyPosition.x.ToString("F4") + "\t"
+                        + PenaltyPosition.y.ToString("F4") + "\t"
+                        + PenaltyPosition.z.ToString("F4") + "\t"
+                        + ControllerPosition.x.ToString("F4") + "\t"
+                        + ControllerPosition.y.ToString("F4") + "\t"
+                        + ControllerPosition.z.ToString("F4") + "\t"
+                        + GazePosition.x.ToString("F4") + "\t"
+                        + GazePosition.y.ToString("F4") + "\t"
+                        + GazePosition.z.ToString("F4") + "\t" 
+                        + controls.hit.ToString() + "\t" +
                         Environment.NewLine
                     );
         }
@@ -104,7 +109,7 @@ public class PrintingPositions : MonoBehaviour
         {
             stringBuilder.Length = 0;
             stringBuilder.Append(
-                        Time.frameCount.ToString() + "\t\t" 
+                        Time.frameCount.ToString() + "\t\t"
                         + zero.ToString("F4") + "\t"
                         + zero.ToString("F4") + "\t"
                         + controllerAngular.ToString("F4") + "\t"
@@ -119,7 +124,7 @@ public class PrintingPositions : MonoBehaviour
 
     public void Update()
     {
-      WriteFile();
+        WriteFile();
     }
 
     public void OnApplicationQuit()
