@@ -58,17 +58,14 @@ namespace ViveSR
                             angularError = 180;
                         }
                     }
-
-                    /*
-                                        if (angularError < 2)
-                                        {
-                                            ready = true;
-                                        }
-                                        if (angularError > 2)
-                                        {
-                                            ready = false;
-                                        }*/
-                    ready = true;
+                    if (angularError < 2)
+                    {
+                       ready = true;
+                    }
+                    if (angularError > 2)
+                    {
+                       ready = false;
+                    }
                 }
                 
 
