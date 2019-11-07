@@ -28,6 +28,8 @@ TagManager:
   - CameraRig
   - variable
   - toggle
+  - objectPlane
+  - minitoggle
   layers:
   - Default
   - TransparentFX

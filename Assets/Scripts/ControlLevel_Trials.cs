@@ -69,7 +69,7 @@ public class ControlLevel_Trials : ControlLevel
     public string startTime;
     public string endTime;
     public int trials = 0; 
-    private int score; 
+    public int score; 
     [System.NonSerialized]
     public float angle, eccentricity, a;
     [System.NonSerialized]
@@ -86,7 +86,9 @@ public class ControlLevel_Trials : ControlLevel
     private int trialScore;
     private int end = 0;
     public bool data;
+    public bool next;
     public int numberoftrials = 20;
+    private float armlength;
     
     // Physical objects
     private GameObject rightController;
@@ -94,6 +96,7 @@ public class ControlLevel_Trials : ControlLevel
     private GameObject headset;
     private GameObject headbar_stable, headbar_variable;
     private GameObject rig;
+    private GameObject objectPlane;
     
     // Empty Game objects
     private GameObject trigger;
@@ -110,11 +113,12 @@ public class ControlLevel_Trials : ControlLevel
     public GameObject startingPositions;
     private Vector3 targetDirection;
     private Transform headsetTrans;
-
+    
     public int hit;
     public int Fix;
     public float percentCorrect;
     private GameObject toggle;
+    public bool minitoggle;
     [System.NonSerialized]
     public GameObject testobject;
     
@@ -143,17 +147,18 @@ public class ControlLevel_Trials : ControlLevel
         rightController = GameObject.FindGameObjectWithTag("rightController");
         leftController = GameObject.FindGameObjectWithTag("leftController");
         headset = GameObject.FindGameObjectWithTag("Camera");
+        objectPlane = GameObject.FindGameObjectWithTag("objectPlane");
         headbar_stable = GameObject.FindGameObjectWithTag("headPosition");
         headbar_variable = GameObject.FindGameObjectWithTag("variable");
         rig = GameObject.FindGameObjectWithTag("CameraRig");
         trigger = GameObject.FindGameObjectWithTag("Trigger");
         toggle = GameObject.FindGameObjectWithTag("toggle");
+        minitoggle = GameObject.FindGameObjectWithTag("minitoggle");
         trialTypes = controls.trialTypes;
         scoreDisplay.text = "Score: " + score;
 
         nothing.AddStateInitializationMethod(() =>
         {
-            hit = -1;
             beginText.SetActive(false);
             fixationpoint.SetActive(false);
             endText.SetActive(false);
@@ -163,16 +168,28 @@ public class ControlLevel_Trials : ControlLevel
             scoreText.SetActive(false);
             trigger.SetActive(false);
             data = false;
+            
         });
-        nothing.SpecifyStateTermination(()=> toggle.activeSelf == false, headStabilization);
+        nothing.SpecifyStateTermination(() => next == true, headStabilization);
 
-        headStabilization.AddStateInitializationMethod(() =>
+        headStabilization.AddUpdateMethod(() =>
         {
-            headbar_stable.transform.SetParent(rig.transform);
+            // participant reaches out
+            if (minitoggle == true)
+            {
+                armlength = Vector3.Distance(playerPosition.transform.position, rightController.transform.position);
+                objectPlane.transform.position = objectPlane.transform.position + new Vector3(0, 0, rightController.transform.position.z);
+            }
+            // head position is correct
+            if (armlength != 0) 
+            {
+                headbar_stable.transform.SetParent(rig.transform);
+                objectPlane.transform.SetParent(rig.transform);
+            }
         });
-        headStabilization.SpecifyStateTermination(() => toggle.activeSelf == true, begin);
+        headStabilization.SpecifyStateTermination(() => next == false, begin);
 
-        begin.AddStateInitializationMethod(() =>
+        begin.AddDefaultInitializationMethod(() =>
         {
             hit = -1;
             headbar_stable.SetActive(true);
@@ -224,7 +241,7 @@ public class ControlLevel_Trials : ControlLevel
         begin.SpecifyStateTermination(() => verifyPositions.positionsCorrect, stimOn);
         begin.AddDefaultTerminationMethod(() => beginText.SetActive(false));
 
-        stimOn.AddStateInitializationMethod(() =>
+        stimOn.AddDefaultInitializationMethod(() =>
         {
         headbar_stable.SetActive(false);
         headbar_variable.SetActive(false);
@@ -235,7 +252,6 @@ public class ControlLevel_Trials : ControlLevel
 
         orientation = UnityEngine.Random.Range(0, 2);
         angle = (Mathf.Deg2Rad * UnityEngine.Random.Range(0, 359));
-        radius = 1.5f;
         
         random2 = UnityEngine.Random.Range(0, controls.trialTypes.Length);
         random1 = controls.trialTypes[random2];
@@ -258,14 +274,14 @@ public class ControlLevel_Trials : ControlLevel
             if (testobject == null)
             {
                 testobject = Instantiate(target);
-                testobject.transform.parent = playerPosition.transform;
+                testobject.transform.SetParent(playerPosition.transform);
+                testobject.transform.localPosition = new Vector3(0, 0, 0);
 
                 targetonObject = GameObject.FindGameObjectWithTag("Object");
                 penalty = GameObject.FindGameObjectWithTag("PenaltyonTarget");
 
-                targetDirection = new Vector3((radius * Mathf.Sin(eccentricity) * Mathf.Cos(angle)), (radius * Mathf.Sin(eccentricity) * Mathf.Sin(angle)), (radius * Mathf.Cos(eccentricity)));
+                testobject.transform.localPosition =  new Vector3(eccentricity * Mathf.Cos(angle), eccentricity * Mathf.Sin(angle), 3*armlength);
 
-                testobject.transform.localPosition = new Vector3(targetDirection.x, targetDirection.y, targetDirection.z);
                 if (orientation == 1)
                 {
                     testobject.transform.eulerAngles = new Vector3(0f, -angle * Mathf.Rad2Deg + 90, 0f);
@@ -286,7 +302,7 @@ public class ControlLevel_Trials : ControlLevel
         });
         stimOn.AddTimer(.1f, collectResponse);
 
-        collectResponse.AddStateInitializationMethod(() =>
+        collectResponse.AddDefaultInitializationMethod(() =>
         {
             Timer = 0;
         });
@@ -319,14 +335,14 @@ public class ControlLevel_Trials : ControlLevel
         collectResponse.SpecifyStateTermination(() => testobject == null, scoreState);
         collectResponse.SpecifyStateTermination(() => Timer > 5f, penaltyState);
 
-        penaltyState.AddStateInitializationMethod(() =>
+        penaltyState.AddDefaultInitializationMethod(() =>
         {
             Destroy(testobject);
             trialScore = -500;
         });
         penaltyState.AddTimer(.01f, destination);
 
-        scoreState.AddStateInitializationMethod(() =>
+        scoreState.AddDefaultInitializationMethod(() =>
         {
             if (triggered.targetTouched == true)
             {
@@ -337,6 +353,7 @@ public class ControlLevel_Trials : ControlLevel
                 scoreDisplay.color = Color.green;
                 scoreDisplay.text = "+ 100 \n " + "Score: " + score;
                 scoreText.SetActive(true);
+                Debug.Log("Trial Number " + trials + ", target was hit");
                 hit = 1;
             }
             else
@@ -353,14 +370,16 @@ public class ControlLevel_Trials : ControlLevel
                 scoreDisplay.text = "- 100 \n " + "Score: " + score;
                 scoreText.SetActive(true);
                 hit = 0;
+                Debug.Log("Trial Number " + trials + ", target was missed");
             }
 
             trigger.SetActive(false);
 
+            Debug.Log("Hit: " + hit);
         });
         scoreState.AddTimer(1.5f, destination);
 
-        destination.AddStateInitializationMethod(() =>
+        destination.AddDefaultInitializationMethod(() =>
         {
             scoreText.SetActive(false);
 
@@ -374,10 +393,11 @@ public class ControlLevel_Trials : ControlLevel
             }
             
         });
+        
         destination.SpecifyStateTermination(() => end == 1, begin);
         destination.SpecifyStateTermination(() => end == 2, feedback);
 
-        feedback.AddStateInitializationMethod(() =>
+        feedback.AddDefaultInitializationMethod(() =>
         {
             
             endText.SetActive(true);

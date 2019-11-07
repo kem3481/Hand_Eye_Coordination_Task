@@ -92,7 +92,7 @@ public class PrintingPositions : MonoBehaviour
         {
             stringBuilder.Length = 0;
             stringBuilder.Append(
-                        Time.frameCount.ToString() + "\t\t" 
+                        Time.frameCount.ToString() + "\t" 
                         + targetAngular.ToString("F4") + "\t"
                         + penaltyAngular.ToString("F4") + "\t"
                         + controllerAngular.ToString("F4") + "\t"

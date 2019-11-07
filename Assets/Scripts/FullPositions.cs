@@ -20,6 +20,7 @@ public class FullPositions : MonoBehaviour
     public float controllerAngular, targetAngular, penaltyAngular, gazeAngular;
     public Vector3 ControllerPosition, TargetPosition, PenaltyPosition, GazePosition, FixPosition, vector;
     public float zero = 0;
+    public int hit;
     //Gives user control over when to start and stop recording, trigger this with spacebar;
     public bool startWriting;
 
@@ -79,16 +80,18 @@ public class FullPositions : MonoBehaviour
 
     void WriteFile()
     {
-        ControllerPosition = (controller.transform.position - headPosition.transform.position);
-        TargetPosition = (controls.targetonObject.transform.position - headPosition.transform.position);
-        PenaltyPosition = (controls.penalty.transform.position - headPosition.transform.position);
-        GazePosition = (gazeHead.gazeDirection + headPosition.transform.position);
+        ControllerPosition = (controller.transform.position);
+        TargetPosition = (controls.targetonObject.transform.position);
+        PenaltyPosition = (controls.penalty.transform.position);
+        GazePosition = (gazeHead.gazeDirection);
+        
+        hit = controls.score;
 
         if (controls.targetonObject != null)
         {
             stringBuilder.Length = 0;
             stringBuilder.Append(
-                        Time.frameCount.ToString() + "\t\t"
+                        Time.frameCount.ToString() + "\t"
                         + TargetPosition.x.ToString("F4") + "\t"
                         + TargetPosition.y.ToString("F4") + "\t"
                         + TargetPosition.z.ToString("F4") + "\t"
@@ -101,25 +104,18 @@ public class FullPositions : MonoBehaviour
                         + GazePosition.x.ToString("F4") + "\t"
                         + GazePosition.y.ToString("F4") + "\t"
                         + GazePosition.z.ToString("F4") + "\t" 
-                        + controls.hit.ToString() + "\t" +
+                        + hit.ToString() + "\t" +
                         Environment.NewLine
                     );
         }
-        if (controls.targetonObject == null)
-        {
-            stringBuilder.Length = 0;
-            stringBuilder.Append(
-                        Time.frameCount.ToString() + "\t\t"
-                        + zero.ToString("F4") + "\t"
-                        + zero.ToString("F4") + "\t"
-                        + controllerAngular.ToString("F4") + "\t"
-                        + gazeAngular.ToString("F4") + "\t" +
-                        Environment.NewLine
-                    );
-        }
+        
         writeString = stringBuilder.ToString();
         writebytes = Encoding.ASCII.GetBytes(writeString);
         trialStreams.Write(writebytes, 0, writebytes.Length);
+        Debug.DrawRay(Vector3.zero, ControllerPosition, Color.black);
+        Debug.DrawRay(Vector3.zero, TargetPosition, Color.green);
+        Debug.DrawRay(Vector3.zero, PenaltyPosition, Color.red);
+        Debug.DrawRay(Vector3.zero, GazePosition, Color.magenta);
     }
 
     public void Update()

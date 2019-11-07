@@ -129,6 +129,11 @@ namespace USE_States
             StateTerminationSpecifications = new List<StateTerminationSpecification>();
         }
 
+        internal void AddInitializationMethod(Action p)
+        {
+            throw new NotImplementedException();
+        }
+
         //UPDATE, INITIALIZATION, AND DEFAULT TERMINATION METHODS
         public void AddInitializationMethod(VoidDelegate method, string name)
         {
