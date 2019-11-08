@@ -8,8 +8,8 @@ public class Controls : MonoBehaviour
     // Is creates a list of 40 of each type.
 
     // Eccentricities
-    private float small = 10f;
-    private float medium = 20f;
+    private float small = 20f;
+    private float medium = 25f;
     private float large =  30f;
     
     // Prefabs

@@ -89,6 +89,8 @@ public class ControlLevel_Trials : ControlLevel
     public bool next;
     public int numberoftrials = 20;
     private float armlength;
+    private float reaching_distance;
+    private Vector3 armlength_in, armlength_out;
     
     // Physical objects
     private GameObject rightController;
@@ -147,7 +149,6 @@ public class ControlLevel_Trials : ControlLevel
         rightController = GameObject.FindGameObjectWithTag("rightController");
         leftController = GameObject.FindGameObjectWithTag("leftController");
         headset = GameObject.FindGameObjectWithTag("Camera");
-        objectPlane = GameObject.FindGameObjectWithTag("objectPlane");
         headbar_stable = GameObject.FindGameObjectWithTag("headPosition");
         headbar_variable = GameObject.FindGameObjectWithTag("variable");
         rig = GameObject.FindGameObjectWithTag("CameraRig");
@@ -177,14 +178,14 @@ public class ControlLevel_Trials : ControlLevel
             // participant reaches out
             if (minitoggle == true)
             {
-                armlength = Vector3.Distance(playerPosition.transform.position, rightController.transform.position);
-                objectPlane.transform.position = objectPlane.transform.position + new Vector3(0, 0, rightController.transform.position.z);
+                armlength_in = rightController.transform.position;
             }
             // head position is correct
-            if (armlength != 0) 
+            if (minitoggle == false && armlength_in != Vector3.zero) 
             {
+                armlength_out = rightController.transform.position;
+                armlength = Vector3.Distance(armlength_in, armlength_out);
                 headbar_stable.transform.SetParent(rig.transform);
-                objectPlane.transform.SetParent(rig.transform);
             }
         });
         headStabilization.SpecifyStateTermination(() => next == false, begin);
@@ -280,7 +281,7 @@ public class ControlLevel_Trials : ControlLevel
                 targetonObject = GameObject.FindGameObjectWithTag("Object");
                 penalty = GameObject.FindGameObjectWithTag("PenaltyonTarget");
 
-                testobject.transform.localPosition =  new Vector3(eccentricity * Mathf.Cos(angle), eccentricity * Mathf.Sin(angle), 3*armlength);
+                testobject.transform.localPosition =  new Vector3(eccentricity * Mathf.Cos(angle), eccentricity * Mathf.Sin(angle), 4*armlength);
 
                 if (orientation == 1)
                 {
@@ -308,9 +309,9 @@ public class ControlLevel_Trials : ControlLevel
         });
         collectResponse.AddUpdateMethod(() =>
         {
-
+            reaching_distance = Vector3.Distance(armlength_in, rightController.transform.position);
             
-            if (triggered.passedRadius == true)
+            if (reaching_distance > armlength)
             {
                 trigger_x = test.transform.position.x;
                 trigger_y = test.transform.position.y;

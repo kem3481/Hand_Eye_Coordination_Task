@@ -30,6 +30,7 @@ TagManager:
   - toggle
   - objectPlane
   - minitoggle
+  - hand
   layers:
   - Default
   - TransparentFX

@@ -28,13 +28,15 @@ namespace ViveSR
                 private void Start()
                 {
                     ready = false;
-                }
 
-                void Update()
-                {
                     fixationPoint.transform.SetParent(head.transform);
                     fixationPoint.transform.localPosition = Vector3.forward * 0.5f;
+                    fixationPoint.transform.localPosition = fixationPoint.transform.localPosition + new Vector3(0, -.05f, 0);
                     fixationpointPos = fixationPoint.transform.localPosition;
+                }
+                
+                void Update()
+                {
 
                     
                     if (SRanipal_Eye_Framework.Status == SRanipal_Eye_Framework.FrameworkStatus.WORKING)
